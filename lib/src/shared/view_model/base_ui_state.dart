@@ -1,0 +1,59 @@
+import 'package:unfold_dash/src/shared/shared.dart';
+
+sealed class BaseUiState<T> {
+  const BaseUiState();
+  T? get data => null;
+  AppException? get error => null;
+  bool get hasData => data != null;
+}
+
+class IdleState<T> extends BaseUiState<T> {
+  const IdleState();
+}
+
+class LoadingState<T> extends BaseUiState<T> {
+  LoadingState([this.data]);
+
+  @override
+  final T? data;
+}
+
+class ErrorState<T> extends BaseUiState<T> {
+  final AppException exception;
+
+  ErrorState(this.exception, [this.data]);
+
+  @override
+  final T? data;
+
+  @override
+  AppException? get error => exception;
+}
+
+class SuccessState<T> extends BaseUiState<T> {
+  final T result;
+
+  SuccessState(this.result);
+
+  @override
+  T? get data => result;
+}
+
+extension BaseUiStateX<T> on BaseUiState<T> {
+  BaseUiState<T> loading([T? data]) {
+    if (data != null) return LoadingState(data);
+
+    return switch (this) {
+      LoadingState<T>(:final data?) => LoadingState(data),
+      _ => LoadingState(),
+    };
+  }
+
+  BaseUiState<T> success(T data) {
+    return SuccessState(data);
+  }
+
+  BaseUiState<T> exception(AppException error) {
+    return ErrorState(error);
+  }
+}
