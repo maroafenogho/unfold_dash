@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
 import 'package:unfold_dash/src/shared/shared.dart';
-import 'package:unfold_dash/src/shared/theme/theme_data.dart';
 
 class AppContainerWrapper extends StatelessWidget {
   const AppContainerWrapper({
@@ -40,21 +38,23 @@ class AppContainerWrapper extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         child: AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeIn,
-            constraints: constraints,
-            height: height,
-            width: width,
-            margin: margin ?? EdgeInsets.zero,
-            padding: padding ?? AppConstants.mediumSpaceM.allEdgeInsets,
-            decoration: BoxDecoration(
-              gradient: gradient,
-              border: border,
-              borderRadius: borderRadius ??
-                  BorderRadius.circular(AppConstants.mediumSpace - 2),
-              color: color ?? context.colorScheme.surface,
-            ),
-            child: child),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeIn,
+          constraints: constraints,
+          height: height,
+          width: width,
+          margin: margin ?? EdgeInsets.zero,
+          padding: padding ?? AppConstants.mediumSpaceM.allEdgeInsets,
+          decoration: BoxDecoration(
+            gradient: gradient,
+            border: border,
+            borderRadius:
+                borderRadius ??
+                BorderRadius.circular(AppConstants.mediumSpace - 2),
+            color: color ?? context.colorScheme.surface,
+          ),
+          child: child,
+        ),
       ),
     );
   }

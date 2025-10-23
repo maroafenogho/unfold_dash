@@ -1,17 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:unfold_dash/src/shared/shared.dart';
-import 'package:unfold_dash/src/shared/theme/theme_data.dart';
-
 
 class AppShimmer extends StatefulWidget {
-  const AppShimmer(
-      {super.key,
-      this.height,
-      this.width,
-      this.child,
-      required this.colors,
-      this.baseColor});
+  const AppShimmer({
+    super.key,
+    this.height,
+    this.width,
+    this.child,
+    required this.colors,
+    this.baseColor,
+  });
   final double? height, width;
   final List<Color> colors;
   final Color? baseColor;
@@ -87,8 +85,7 @@ class _AppShimmerState extends State<AppShimmer>
           height: widget.height ?? AppConstants.bigSpace,
           width: widget.width ?? MediaQuery.sizeOf(context).width,
           borderRadius: BorderRadius.circular(4),
-          color: widget.baseColor ??
-              context.colorScheme.surface.withValues(alpha: 0.7),
+          color: widget.baseColor ?? Colors.white,
           child: widget.child ?? const SizedBox.shrink(),
         ),
         shaderCallback: (rect) {
@@ -101,28 +98,6 @@ class _AppShimmerState extends State<AppShimmer>
           ).createShader(rect);
         },
       ),
-    );
-  }
-}
-
-class Bank78LoadingContainer extends StatelessWidget {
-  const Bank78LoadingContainer(
-      {super.key, this.height, this.width, this.colors});
-  final double? height;
-  final double? width;
-  final List<Color>? colors;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppShimmer(
-      width: width ?? MediaQuery.sizeOf(context).width,
-      height: height ?? 60,
-      baseColor: context.colorScheme.primary,
-      colors: colors ??
-          [
-            context.colorScheme.primary,
-            context.colorScheme.surface,
-          ],
     );
   }
 }

@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
+extension TimeX on DateTime {
+  String get toFormattedDate {
+    return '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+  }
+}
+
 extension Space on num {
+  DateTime get dateFrimMilliseconds =>
+      DateTime.fromMillisecondsSinceEpoch(int.parse(toString()));
   SizedBox get vSpace => SizedBox(height: toDouble());
 
   SizedBox get hSpace => SizedBox(width: toDouble());

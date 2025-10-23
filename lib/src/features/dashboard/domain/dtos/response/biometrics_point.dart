@@ -1,11 +1,11 @@
-import 'package:unfold_dash/src/shared/typedefs.dart' show Json;
+import 'package:unfold_dash/src/shared/shared.dart';
 
 class BiometricsPoint {
   final num hrv;
   final num rhr;
   final int steps;
   final num sleepScore;
-  final String date;
+  final Option<DateTime> date;
 
   BiometricsPoint({
     required this.hrv,
@@ -20,6 +20,6 @@ class BiometricsPoint {
     rhr: json['rhr'] ?? 0,
     steps: json['steps'] ?? 0,
     sleepScore: json['sleepScore'] ?? 0,
-    date: json['date'] ?? '',
+    date: Option.fromNullable(DateTime.tryParse(json['date'] ?? '')),
   );
 }

@@ -6,3 +6,5 @@ export 'services/services.dart';
 export 'constants.dart';
 export 'extensions.dart';
 export 'widgets/widgets.dart';
+export 'view_model/base_ui_state.dart';
+export 'theme/theme.dart';

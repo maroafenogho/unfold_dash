@@ -25,8 +25,8 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     : this(
         secondary: const Color(0xff4a90e2),
         success: const Color(0xff359834),
-        background: const Color(0xff212738),
-        surface: const Color(0xff1e293b),
+        background: const Color(0xff12161f),
+        surface: const Color(0xff212738),
         textPrimary: const Color(0xfff1f5f9),
         textSecondary: const Color(0xff94a3b8),
         error: const Color(0xfff87171),
