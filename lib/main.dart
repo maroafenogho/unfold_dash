@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unfold_dash/src/features/dashboard/application/dashboard_notifier.dart';
+import 'package:unfold_dash/src/shared/shared.dart';
+import 'package:unfold_dash/src/shared/theme/theme_data.dart';
+import 'package:unfold_dash/src/shared/theme/theme_mode.dart';
 import 'package:unfold_dash/src/shared/view_model/base_ui_state.dart';
 
-void main() {
+void main()async {
   WidgetsFlutterBinding.ensureInitialized();
+  await PrefsService.initialise();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -14,12 +18,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return ListenableBuilder(
+      listenable: appThemeModeNotifier,
+      builder:(context, child) =>  MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        themeMode: appThemeModeNotifier.themeMode,
+        darkTheme:ThemeData(extensions: [AppThemeData.darkMode()]),
+        theme: ThemeData(
+         extensions: [AppThemeData.lightMode()]),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -34,20 +43,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        backgroundColor: context.colorScheme.surface,
+        title: Text(widget.title, style: context.typography.paragraph.p1,),
+        actions: [
+          Switch(
+            activeTrackColor: context.colorScheme.secondary,
+            thumbColor: WidgetStateColor.resolveWith((states) => context.colorScheme.textPrimary),
+            
+            value: appThemeModeNotifier.isDark, onChanged: (value){
+              if(value){
+                appThemeModeNotifier.setThemeMode(AppThemeModeEnum.dark);
+                return;
+              }
+                appThemeModeNotifier.setThemeMode(AppThemeModeEnum.light);
+
+          })
+        ],
       ),
       body: Consumer(
         builder: (context, ref, child) {
@@ -67,27 +83,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   SuccessState(result: final data) => Text(
                     '${data.first.sleepScore}',
                   ),
-                  _ => Text('Could not fetch data.\n Please try again'),
+                  _ => Text('Could not fetch data.\n Please try again', style: context.typography.paragraph.p3,),
                 },
-                Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
+               
               ],
             ),
           );
         },
       ),
-      floatingActionButton: Consumer(
-        builder: (context, ref, _) => FloatingActionButton(
-          onPressed: () {
-            _incrementCounter();
-            ref.read(dashboardNotifierProvider.notifier).getBioData();
-          },
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
