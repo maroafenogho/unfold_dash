@@ -22,4 +22,12 @@ class BiometricsPoint {
     sleepScore: json['sleepScore'] ?? 0,
     date: Option.fromNullable(DateTime.tryParse(json['date'] ?? '')),
   );
+
+  Json toJson() => {
+    "date": date,
+    "hrv": hrv,
+    "rhr": rhr,
+    "steps": steps,
+    "sleepScore": sleepScore,
+  };
 }

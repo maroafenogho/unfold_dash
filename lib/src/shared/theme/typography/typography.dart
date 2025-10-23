@@ -9,11 +9,13 @@ class AppTypography extends ThemeExtension<AppTypography> {
   final ParagraphTextStyle paragraph;
   final TitleTextStyle title;
   final HeaderTextStyle header;
+  final BodyTextStyle body;
 
   const AppTypography._({
     required this.paragraph,
     required this.title,
     required this.header,
+    required this.body,
   });
 
   AppTypography.lightMode()
@@ -21,6 +23,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
         paragraph: ParagraphTextStyle.lightMode(),
         title: TitleTextStyle.lightMode(),
         header: HeaderTextStyle.lightMode(),
+        body: BodyTextStyle.lightMode(),
       );
 
   AppTypography.darkMode()
@@ -28,6 +31,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
         title: TitleTextStyle.darkMode(),
         paragraph: ParagraphTextStyle.darkMode(),
         header: HeaderTextStyle.darkMode(),
+        body: BodyTextStyle.darkMode(),
       );
 
   @override
@@ -35,11 +39,13 @@ class AppTypography extends ThemeExtension<AppTypography> {
     ParagraphTextStyle? paragraph,
     TitleTextStyle? title,
     HeaderTextStyle? header,
+    BodyTextStyle? body,
   }) {
     return AppTypography._(
       paragraph: paragraph ?? this.paragraph,
       title: title ?? this.title,
       header: header ?? this.header,
+      body: body ?? this.body,
     );
   }
 
@@ -53,6 +59,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       paragraph: paragraph.lerp(other.paragraph, t),
       title: title.lerp(other.title, t),
       header: header.lerp(other.header, t),
+      body: body.lerp(other.body, t),
     );
   }
 }

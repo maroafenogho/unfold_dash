@@ -3,45 +3,59 @@ import 'package:flutter/material.dart';
 import 'package:unfold_dash/src/features/dashboard/application/dashboard_ui_state.dart';
 import 'package:unfold_dash/src/features/dashboard/data/dashboard_repo_impl.dart';
 import 'package:unfold_dash/src/features/dashboard/data/dashboard_repository.dart';
-import 'package:unfold_dash/src/shared/view_model/base_ui_state.dart';
+import 'package:unfold_dash/src/shared/shared.dart';
 
 class DashboardNotifier extends ChangeNotifier {
-  DashboardNotifier(){
+  DashboardNotifier() {
     repo = DashboardRepoImpl();
   }
   late final DashboardRepository repo;
-  DashboardUiState state = DashboardUiState.initial();
+  DashboardUiState _state = const DashboardUiState.initial();
 
+  DashboardUiState get state => _state;
 
   Future<void> getJournals() async {
-    state = state.copyWith(journalUiState: state.journalUiState.loading());
+    _updateState(
+      state.copyWith(journalUiState: state.journalUiState.loading()),
+    );
 
     final result = await repo.getJournals();
-    state = state.copyWith(
+    _state = state.copyWith(
       journalUiState: result.fold(
         state.journalUiState.exception,
         state.journalUiState.success,
       ),
     );
-  notifyListeners();
+    _updateState(_state);
+  }
 
+  void setTimeRange(TimeRange range) {
+    _updateState(state.copyWith(selectedTimeRange: range));
   }
 
   Future<void> getBioData() async {
-    state = state.copyWith(
-      biometricsUiState: state.biometricsUiState.loading(
-        state.biometricsUiState.data,
+    _updateState(
+      state.copyWith(
+        biometricsUiState: state.biometricsUiState.loading(
+          state.biometricsUiState.data,
+        ),
       ),
     );
 
     final result = await repo.getBiometricPoints();
-    state = state.copyWith(
+    _state = state.copyWith(
       biometricsUiState: result.fold(
         state.biometricsUiState.exception,
         state.biometricsUiState.success,
       ),
     );
-  notifyListeners();
+    _updateState(_state);
+  }
+
+  void _updateState(DashboardUiState newState) {
+    _state = newState;
+    notifyListeners();
   }
 }
+
 final dashNotifier = DashboardNotifier();

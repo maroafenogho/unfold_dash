@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:unfold_dash/src/features/dashboard/application/dashboard_notifier.dart';
 import 'package:unfold_dash/src/features/dashboard/presentation/widgets/theme_switcher.dart';
@@ -59,24 +60,103 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   SuccessState(result: final data) => Column(
                     children: [
+                      SegmentedButton<TimeRange>(
+                        showSelectedIcon: true,
+                        selectedIcon: Icon(
+                          Icons.check,
+                          color: context.colorScheme.textPrimary,
+                        ),
+                        onSelectionChanged: (range) =>
+                            dashNotifier.setTimeRange(range.first),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateColor.resolveWith(
+                            (states) => context.colorScheme.surface,
+                          ),
+                        ),
+                        segments: TimeRange.values
+                            .map(
+                              (e) => ButtonSegment<TimeRange>(
+                                value: e,
+                                label: Text(
+                                  e.json,
+                                  style: context.typography.body.b1.bold,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        selected: <TimeRange>{
+                          dashNotifier.state.selectedTimeRange,
+                        },
+                      ),
+                      AppConstants.mediumSpaceM.vSpace,
                       SizedBox(
-                        height: 200,
+                        height: MediaQuery.sizeOf(context).height - 200,
+                        width: MediaQuery.sizeOf(context).width - 100,
                         child: LineChart(
+                          transformationConfig: FlTransformationConfig(
+                            trackpadScrollCausesScale: true,
+                            scaleAxis: FlScaleAxis.free,
+                            maxScale: 3,
+                          ),
                           LineChartData(
                             borderData: FlBorderData(show: false),
-                            gridData: FlGridData(show: false),
-                            titlesData: FlTitlesData(show: false),
-                            clipData: FlClipData.horizontal(),
+                            gridData: FlGridData(show: true),
+                            titlesData: FlTitlesData(
+                              show: true,
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  reservedSize: 40,
+                                  getTitlesWidget: (value, meta) => Text(
+                                    value.toString(),
+                                    style: context.typography.body.b2,
+                                  ),
+                                ),
+                              ),
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) => Text(
+                                    value.dateFrimMilliseconds.toFormattedDate,
+                                    style: context.typography.body.b3,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            minY:
+                                data.first
+                                    .toJson()
+                                    .values
+                                    .whereType<num>()
+                                    .map((e) => e.toDouble())
+                                    .toList()
+                                    .reduce((a, b) => a < b ? a : b) -
+                                10,
                             minX: data.first.date.fold(
                               () => 0,
                               (value) =>
-                                  value.millisecondsSinceEpoch.toDouble(),
+                                  value.millisecondsSinceEpoch.toDouble() -
+                                  10000000,
+                            ),
+                            maxX: data.last.date.fold(
+                              () => 0,
+                              (value) =>
+                                  value.millisecondsSinceEpoch.toDouble() +
+                                  10000000,
                             ),
                             lineTouchData: LineTouchData(
                               touchTooltipData: LineTouchTooltipData(
                                 maxContentWidth: 200,
+                                getTooltipColor: (touchedSpot) =>
+                                    context.colorScheme.surface,
                                 fitInsideVertically: true,
-                                fitInsideHorizontally: true,
+                                // fitInsideHorizontally: true,
                                 showOnTopOfTheChartBoxArea: true,
                                 getTooltipItems: (touchedSpots) {
                                   return touchedSpots
@@ -88,7 +168,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                               .toFormattedDate,
                                           context.typography.paragraph.p4,
                                           children: [
-                                            TextSpan(text: '\nHRV: ${e.y}'),
+                                            TextSpan(
+                                              text:
+                                                  '\n${e.barIndex == 1 ? 'RHR' : 'HRV'} : ${e.y}\n\n${e.bar.lineChartStepData}',
+                                            ),
                                           ],
                                         ),
                                       )
@@ -98,8 +181,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             lineBarsData: [
                               LineChartBarData(
+                                barWidth: 1.5,
                                 preventCurveOverShooting: true,
-
+                                color: context.colorScheme.textSecondary,
+                                isCurved: true,
                                 spots: data
                                     .map(
                                       (e) => FlSpot(
@@ -112,10 +197,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                         e.hrv.toDouble(),
                                       ),
                                     )
+                                    .toSet()
                                     .toList(),
                               ),
                               LineChartBarData(
+                                barWidth: 1.5,
                                 preventCurveOverShooting: true,
+                                color: context.colorScheme.secondary,
 
                                 spots: data
                                     .map(
@@ -131,18 +219,51 @@ class _MyHomePageState extends State<MyHomePage> {
                                     )
                                     .toList(),
                               ),
+                              // LineChartBarData(
+                              //   barWidth: 1.5,
+                              //   preventCurveOverShooting: true,
+                              //   color: context.colorScheme.secondary,
+
+                              //   spots: data
+                              //       .map(
+                              //         (e) => FlSpot(
+                              //           e.date.fold(
+                              //             () => 0,
+                              //             (value) => value
+                              //                 .millisecondsSinceEpoch
+                              //                 .toDouble(),
+                              //           ),
+                              //           e.steps.toDouble(),
+                              //         ),
+                              //       )
+                              //       .toList(),
+                              // ),
                             ],
                           ),
                         ),
                       ),
-                      Text(
-                        '${data.first.sleepScore}',
-                        style: context.typography.paragraph.p3.bold,
-                      ),
                     ],
                   ),
-                  _ => Text(
-                    'Could not fetch data.\n Please try again',
+                  _ => Text.rich(
+                    TextSpan(
+                      text: 'Could not fetch data.\n',
+                      children: [
+                        TextSpan(
+                          text: 'Retry 🔄',
+                          style: TextStyle().copyWith(
+                            color: context.colorScheme.secondary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: context.colorScheme.secondary,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              dashNotifier.getBioData();
+                            },
+                        ),
+                      ],
+                    ),
+
+                    textAlign: TextAlign.center,
                     style: context.typography.paragraph.p3,
                   ),
                 },
@@ -175,22 +296,22 @@ class ChartLoader extends StatelessWidget {
         children: [
           AppShimmer(
             width: 100,
-            height: AppConstants.smallSpace,
+            height: AppConstants.mediumSpaceM,
             colors: colors,
           ),
           AppShimmer(
             width: 150,
-            height: AppConstants.smallSpace,
+            height: AppConstants.mediumSpaceM,
             colors: colors,
           ),
           AppShimmer(
             width: 200,
-            height: AppConstants.smallSpace,
+            height: AppConstants.mediumSpaceM,
             colors: colors,
           ),
           AppShimmer(
             width: 150,
-            height: AppConstants.smallSpace,
+            height: AppConstants.mediumSpaceM,
             colors: colors,
           ),
         ],
