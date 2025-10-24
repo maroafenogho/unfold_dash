@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppColorScheme extends ThemeExtension<AppColorScheme> {
   final Color primary;
   final Color secondary;
+  final Color tetiary;
   final Color success;
   final Color background;
   final Color surface;
@@ -14,6 +15,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     required this.primary,
     required this.secondary,
     required this.success,
+    required this.tetiary,
     required this.background,
     required this.surface,
     required this.textPrimary,
@@ -26,6 +28,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
         secondary: const Color(0xff4a90e2),
         success: const Color(0xff359834),
         background: const Color(0xff12161f),
+        tetiary: const Color(0xfff4a261),
         surface: const Color(0xff212738),
         textPrimary: const Color(0xfff1f5f9),
         textSecondary: const Color(0xff94a3b8),
@@ -37,6 +40,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     : this(
         secondary: const Color(0xff4a90e2),
         success: const Color(0xff355834),
+        tetiary: const Color(0xfff4a261),
         surface: const Color(0xffdbe6de),
         background: const Color(0xfff1f5f2),
         textPrimary: const Color(0xff1f2937),
@@ -49,6 +53,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   ThemeExtension<AppColorScheme> copyWith({
     Color? primary,
     Color? secondary,
+    Color? tetiary,
     Color? success,
     Color? background,
     Color? surface,
@@ -58,6 +63,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   }) => AppColorScheme(
     primary: primary ?? this.primary,
     secondary: secondary ?? this.secondary,
+    tetiary: tetiary ?? this.tetiary,
     success: success ?? this.success,
     background: background ?? this.background,
     surface: surface ?? this.surface,
@@ -77,6 +83,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     return AppColorScheme(
       primary: Color.lerp(primary, other.primary, t)!,
       secondary: Color.lerp(secondary, other.secondary, t)!,
+      tetiary: Color.lerp(tetiary, other.tetiary, t)!,
       success: Color.lerp(success, other.success, t)!,
       background: Color.lerp(background, other.background, t)!,
       surface: Color.lerp(surface, other.surface, t)!,

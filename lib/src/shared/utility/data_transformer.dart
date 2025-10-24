@@ -24,7 +24,7 @@ EitherExceptionOr<E> _transformData<E>(
     if (data case final List list?) {
       return Right(transformer({'list': list}));
     }
-    return Left(GroundException('Could ot process Data'));
+    return Left(GroundException('Could not process Data'));
   } on TypeError catch (e) {
     return Left(ObjectParseException(e.stackTrace));
   } on Exception catch (e) {

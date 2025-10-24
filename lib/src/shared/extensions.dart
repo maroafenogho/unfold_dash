@@ -1,8 +1,13 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 extension TimeX on DateTime {
   String get toFormattedDate {
-    return '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+    return '${day.toString().padLeft(2, '0')}/${month.toString().padLeft(2, '0')}';
+  }
+
+  String get toFullDate {
+    return '${day.toString().padLeft(2, '0')}/${month.toString().padLeft(2, '0')}/$year';
   }
 }
 
@@ -42,5 +47,21 @@ extension Space on num {
       return 0;
     }
     return number;
+  }
+}
+
+extension MinMaxExt on List<FlSpot> {
+  ({double min, double max}) get minimumAndMaximum {
+    if (isEmpty) {
+      return (min: 0.0, max: 0.0);
+    }
+    final min = reduce(
+      (value, element) => value.y < element.y ? value : element,
+    );
+    final max = reduce(
+      (value, element) => value.y > element.y ? value : element,
+    );
+
+    return (min: min.y, max: max.y);
   }
 }

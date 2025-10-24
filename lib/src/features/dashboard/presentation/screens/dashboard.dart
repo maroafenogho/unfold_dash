@@ -1,8 +1,6 @@
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:unfold_dash/src/features/dashboard/application/dashboard_notifier.dart';
-import 'package:unfold_dash/src/features/dashboard/presentation/widgets/theme_switcher.dart';
+import 'package:unfold_dash/src/features/dashboard/presentation/widgets/widgets.dart';
 import 'package:unfold_dash/src/shared/shared.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -33,288 +31,178 @@ class _MyHomePageState extends State<MyHomePage> {
         actionsPadding: AppConstants.mediumSpace.hEdgeInsets,
         actions: [const ThemeModeSwitcher()],
       ),
-      body: Padding(
-        padding: AppConstants.mediumSpaceM.allEdgeInsets,
-        child: ListenableBuilder(
-          listenable: dashNotifier,
-          builder: (context, child) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                switch (dashNotifier.state.biometricsUiState) {
-                  LoadingState(data: final data) => Column(
-                    children: [
-                      if (data != null)
-                        Text(
-                          '${data.first.sleepScore}',
-                          style: context.typography.paragraph.p3,
-                        ),
-                      ChartLoader(
-                        colors: [
-                          context.colorScheme.surface,
-                          context.colorScheme.textSecondary,
-                          context.colorScheme.textPrimary,
-                        ],
-                      ),
-                    ],
-                  ),
-                  SuccessState(result: final data) => Column(
-                    children: [
-                      SegmentedButton<TimeRange>(
-                        showSelectedIcon: true,
-                        selectedIcon: Icon(
-                          Icons.check,
-                          color: context.colorScheme.textPrimary,
-                        ),
-                        onSelectionChanged: (range) =>
-                            dashNotifier.setTimeRange(range.first),
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateColor.resolveWith(
-                            (states) => context.colorScheme.surface,
-                          ),
-                        ),
-                        segments: TimeRange.values
-                            .map(
-                              (e) => ButtonSegment<TimeRange>(
-                                value: e,
-                                label: Text(
-                                  e.json,
-                                  style: context.typography.body.b1.bold,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        selected: <TimeRange>{
-                          dashNotifier.state.selectedTimeRange,
-                        },
-                      ),
-                      AppConstants.mediumSpaceM.vSpace,
-                      SizedBox(
-                        height: MediaQuery.sizeOf(context).height - 200,
-                        width: MediaQuery.sizeOf(context).width - 100,
-                        child: LineChart(
-                          transformationConfig: FlTransformationConfig(
-                            trackpadScrollCausesScale: true,
-                            scaleAxis: FlScaleAxis.free,
-                            maxScale: 3,
-                          ),
-                          LineChartData(
-                            borderData: FlBorderData(show: false),
-                            gridData: FlGridData(show: true),
-                            titlesData: FlTitlesData(
-                              show: true,
-                              rightTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
-                              leftTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 40,
-                                  getTitlesWidget: (value, meta) => Text(
-                                    value.toString(),
-                                    style: context.typography.body.b2,
-                                  ),
-                                ),
-                              ),
-                              topTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              ),
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitlesWidget: (value, meta) => Text(
-                                    value.dateFrimMilliseconds.toFormattedDate,
-                                    style: context.typography.body.b3,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            minY:
-                                data.first
-                                    .toJson()
-                                    .values
-                                    .whereType<num>()
-                                    .map((e) => e.toDouble())
-                                    .toList()
-                                    .reduce((a, b) => a < b ? a : b) -
-                                10,
-                            minX: data.first.date.fold(
-                              () => 0,
-                              (value) =>
-                                  value.millisecondsSinceEpoch.toDouble() -
-                                  10000000,
-                            ),
-                            maxX: data.last.date.fold(
-                              () => 0,
-                              (value) =>
-                                  value.millisecondsSinceEpoch.toDouble() +
-                                  10000000,
-                            ),
-                            lineTouchData: LineTouchData(
-                              touchTooltipData: LineTouchTooltipData(
-                                maxContentWidth: 200,
-                                getTooltipColor: (touchedSpot) =>
-                                    context.colorScheme.surface,
-                                fitInsideVertically: true,
-                                // fitInsideHorizontally: true,
-                                showOnTopOfTheChartBoxArea: true,
-                                getTooltipItems: (touchedSpots) {
-                                  return touchedSpots
-                                      .map(
-                                        (e) => LineTooltipItem(
-                                          e
-                                              .x
-                                              .dateFrimMilliseconds
-                                              .toFormattedDate,
-                                          context.typography.paragraph.p4,
-                                          children: [
-                                            TextSpan(
-                                              text:
-                                                  '\n${e.barIndex == 1 ? 'RHR' : 'HRV'} : ${e.y}\n\n${e.bar.lineChartStepData}',
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                      .toList();
-                                },
-                              ),
-                            ),
-                            lineBarsData: [
-                              LineChartBarData(
-                                barWidth: 1.5,
-                                preventCurveOverShooting: true,
-                                color: context.colorScheme.textSecondary,
-                                isCurved: true,
-                                spots: data
-                                    .map(
-                                      (e) => FlSpot(
-                                        e.date.fold(
-                                          () => 0,
-                                          (value) => value
-                                              .millisecondsSinceEpoch
-                                              .toDouble(),
-                                        ),
-                                        e.hrv.toDouble(),
-                                      ),
-                                    )
-                                    .toSet()
-                                    .toList(),
-                              ),
-                              LineChartBarData(
-                                barWidth: 1.5,
-                                preventCurveOverShooting: true,
-                                color: context.colorScheme.secondary,
+      body: ListenableBuilder(
+        listenable: dashNotifier,
+        builder: (context, child) {
+          return switch (dashNotifier.state.biometricsUiState) {
+            LoadingState() => Center(
+              child: ChartLoader(
+                colors: [
+                  context.colorScheme.textSecondary,
+                  context.colorScheme.textPrimary,
+                  context.colorScheme.textSecondary,
+                ],
+                baseColor: context.colorScheme.surface,
+              ),
+            ),
+            SuccessState(result: final data) => SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: AppConstants.mediumSpaceM.allEdgeInsets,
 
-                                spots: data
-                                    .map(
-                                      (e) => FlSpot(
-                                        e.date.fold(
-                                          () => 0,
-                                          (value) => value
-                                              .millisecondsSinceEpoch
-                                              .toDouble(),
-                                        ),
-                                        e.rhr.toDouble(),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                              // LineChartBarData(
-                              //   barWidth: 1.5,
-                              //   preventCurveOverShooting: true,
-                              //   color: context.colorScheme.secondary,
-
-                              //   spots: data
-                              //       .map(
-                              //         (e) => FlSpot(
-                              //           e.date.fold(
-                              //             () => 0,
-                              //             (value) => value
-                              //                 .millisecondsSinceEpoch
-                              //                 .toDouble(),
-                              //           ),
-                              //           e.steps.toDouble(),
-                              //         ),
-                              //       )
-                              //       .toList(),
-                              // ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  _ => Text.rich(
-                    TextSpan(
-                      text: 'Could not fetch data.\n',
+                child: Column(
+                  children: [
+                    Wrap(
+                      alignment: WrapAlignment.end,
+                      spacing: AppConstants.mediumSpaceX,
+                      runSpacing: AppConstants.smallSpace,
                       children: [
-                        TextSpan(
-                          text: 'Retry 🔄',
-                          style: TextStyle().copyWith(
-                            color: context.colorScheme.secondary,
-                            decoration: TextDecoration.underline,
-                            decorationColor: context.colorScheme.secondary,
+                        SegmentedButton<TimeRange>(
+                          showSelectedIcon: true,
+                          selectedIcon: Icon(
+                            Icons.check,
+                            color: context.colorScheme.textPrimary,
                           ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              dashNotifier.getBioData();
-                            },
+                          onSelectionChanged: (range) {
+                            dashNotifier.filterBioData(range.first, data);
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateColor.resolveWith(
+                              (states) => context.colorScheme.surface,
+                            ),
+                          ),
+                          segments: TimeRange.values
+                              .map(
+                                (e) => ButtonSegment<TimeRange>(
+                                  value: e,
+                                  label: Text(
+                                    e.json,
+                                    style: context.typography.body.b1.bold,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          selected: <TimeRange>{
+                            dashNotifier.state.selectedTimeRange,
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Get large data: ',
+                              style: context.typography.paragraph.p3.bold,
+                            ),
+                            SizedBox(
+                              height: AppConstants.mediumSpaceX,
+
+                              child: FittedBox(
+                                child: Switch(
+                                  value: dashNotifier.state.getLargeDataSet,
+                                  trackColor: WidgetStateColor.resolveWith(
+                                    (states) =>
+                                        context.colorScheme.textSecondary,
+                                  ),
+                                  thumbColor: WidgetStateColor.resolveWith(
+                                    (states) => context.colorScheme.textPrimary,
+                                  ),
+                                  onChanged: dashNotifier.updateGetLargeData,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        InkWell(
+                          onTap: () => dashNotifier.state.getLargeDataSet
+                              ? dashNotifier.getLargeData(10200)
+                              : dashNotifier.getBioData(),
+                          child: AppContainerWrapper(
+                            margin: EdgeInsets.zero,
+                            borderRadius: BorderRadius.circular(
+                              AppConstants.bigSpace,
+                            ),
+                            padding: 4.allEdgeInsets,
+                            child: Icon(
+                              Icons.refresh,
+                              color: context.colorScheme.textPrimary,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-
+                    AppConstants.mediumSpaceM.vSpace,
+                    UnfoldChart(
+                      data: dashNotifier.state.filteredDataPoints,
+                      returnTouchedPoint: (index) {
+                        // dashNotifier.setTouchedPoint(
+                        //   dashNotifier.state.filteredDataPoints[index],
+                        // );
+                        // print(dashNotifier.state.filteredDataPoints[index].hrv);
+                      },
+                      title: 'HRV (Heart Rate Variability)',
+                      color: context.colorScheme.textSecondary,
+                      getData: (dataPoint) => dataPoint.hrv.toDouble(),
+                      unit: 'ms',
+                    ),
+                    AppConstants.mediumSpaceM.vSpace,
+                    UnfoldChart(
+                      data: dashNotifier.state.filteredDataPoints,
+                      title: 'RHR (Resting Heart Rate)',
+                      returnTouchedPoint: (index) {},
+                      color: context.colorScheme.tetiary,
+                      getData: (dataPoint) => dataPoint.rhr.toDouble(),
+                      unit: 'bpm',
+                    ),
+                    AppConstants.mediumSpaceM.vSpace,
+                    UnfoldChart(
+                      data: dashNotifier.state.filteredDataPoints,
+                      title: 'Steps',
+                      returnTouchedPoint: (index) {},
+                      color: context.colorScheme.success,
+                      getData: (dataPoint) => dataPoint.steps.toDouble(),
+                      unit: 'steps',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ErrorState(exception: final error) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    error.toString(),
                     textAlign: TextAlign.center,
                     style: context.typography.paragraph.p3,
                   ),
-                },
-              ],
+                  InkWell(
+                    onTap: () {
+                      dashNotifier.getBioData();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Retry',
+                          style: context.typography.paragraph.p3.bold.copyWith(
+                            color: context.colorScheme.primary,
+                          ),
+                        ),
+                        Icon(
+                          Icons.refresh,
+                          size: AppConstants.mediumSpaceM,
+                          color: context.colorScheme.primary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ChartLoader extends StatelessWidget {
-  const ChartLoader({super.key, required this.colors});
-  final List<Color> colors;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          left: BorderSide(color: context.colorScheme.textPrimary),
-          bottom: BorderSide(color: context.colorScheme.textPrimary),
-        ),
-      ),
-      padding: AppConstants.mediumSpace.allEdgeInsets,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppConstants.smallSpace,
-        children: [
-          AppShimmer(
-            width: 100,
-            height: AppConstants.mediumSpaceM,
-            colors: colors,
-          ),
-          AppShimmer(
-            width: 150,
-            height: AppConstants.mediumSpaceM,
-            colors: colors,
-          ),
-          AppShimmer(
-            width: 200,
-            height: AppConstants.mediumSpaceM,
-            colors: colors,
-          ),
-          AppShimmer(
-            width: 150,
-            height: AppConstants.mediumSpaceM,
-            colors: colors,
-          ),
-        ],
+            IdleState() => const SizedBox.shrink(),
+          };
+        },
       ),
     );
   }

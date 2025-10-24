@@ -23,6 +23,9 @@ class BiometricsPoint {
     date: Option.fromNullable(DateTime.tryParse(json['date'] ?? '')),
   );
 
+  BiometricsPoint.empty()
+    : this(date: None(), rhr: 0, hrv: 0, sleepScore: 0, steps: 0);
+
   Json toJson() => {
     "date": date,
     "hrv": hrv,

@@ -90,7 +90,7 @@ class _AppShimmerState extends State<AppShimmer>
         ),
         shaderCallback: (rect) {
           return LinearGradient(
-            begin: Alignment.topLeft,
+            begin: Alignment.centerLeft,
             end: Alignment.centerRight,
             tileMode: TileMode.clamp,
             stops: stopsList(),

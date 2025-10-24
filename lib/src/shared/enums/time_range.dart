@@ -1,9 +1,9 @@
 enum TimeRange {
-  d7('7D'),
-  d30('30D'),
-  d90('90D');
+  d7('7D', 7),
+  d30('30D', 30),
+  d90('90D', 90);
 
   final String json;
-
-  const TimeRange(this.json);
+  final int days;
+  const TimeRange(this.json, this.days);
 }

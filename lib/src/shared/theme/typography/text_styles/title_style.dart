@@ -1,11 +1,12 @@
-import 'package:unfold_dash/src/shared/theme/colors/colorscheme.dart';
-import '../typography.dart';
 import 'package:flutter/material.dart';
+import 'package:unfold_dash/src/shared/theme/colors/colorscheme.dart';
+
+import '../typography.dart';
 
 class TitleTextStyle extends ThemeExtension<TitleTextStyle> {
   final TextStyle t1, t2, t3, t4;
 
-   TitleTextStyle._({
+  TitleTextStyle._({
     required this.t1,
     required this.t2,
     required this.t3,
@@ -15,31 +16,31 @@ class TitleTextStyle extends ThemeExtension<TitleTextStyle> {
   TitleTextStyle.lightMode()
     : this._(
         t1: TextStyle(
-          fontSize: 28,
-          fontFamily: AppTypography.epunda,
-          package: AppTypography.packageName,
-          height: 1.38,
-          color: AppColorScheme.light().textPrimary,
-          leadingDistribution: TextLeadingDistribution.even,
-        ),
-        t2:  TextStyle(
-          fontSize: 26,
-          fontFamily: AppTypography.epunda,
-          package: AppTypography.packageName,
-          color: AppColorScheme.light().textPrimary,
-          height: 1.38,
-          leadingDistribution: TextLeadingDistribution.even,
-        ),
-        t3:  TextStyle(
           fontSize: 24,
           fontFamily: AppTypography.epunda,
           package: AppTypography.packageName,
+          height: 1.38,
+          color: AppColorScheme.light().textPrimary,
+          leadingDistribution: TextLeadingDistribution.even,
+        ),
+        t2: TextStyle(
+          fontSize: 22,
+          fontFamily: AppTypography.epunda,
+          package: AppTypography.packageName,
           color: AppColorScheme.light().textPrimary,
           height: 1.38,
           leadingDistribution: TextLeadingDistribution.even,
         ),
-        t4:  TextStyle(
-          fontSize: 22,
+        t3: TextStyle(
+          fontSize: 20,
+          fontFamily: AppTypography.epunda,
+          package: AppTypography.packageName,
+          color: AppColorScheme.light().textPrimary,
+          height: 1.38,
+          leadingDistribution: TextLeadingDistribution.even,
+        ),
+        t4: TextStyle(
+          fontSize: 18,
           fontFamily: AppTypography.epunda,
           color: AppColorScheme.light().textPrimary,
           package: AppTypography.packageName,
@@ -50,32 +51,32 @@ class TitleTextStyle extends ThemeExtension<TitleTextStyle> {
 
   TitleTextStyle.darkMode()
     : this._(
-        t1:  TextStyle(
-          fontSize: 28,
-          fontFamily: AppTypography.epunda,
-          package: AppTypography.packageName,
-          color: AppColorScheme.dark().textPrimary,
-          height: 1.38,
-          leadingDistribution: TextLeadingDistribution.even,
-        ),
-        t2:  TextStyle(
-          fontSize: 26,
-          color: AppColorScheme.dark().textPrimary,
-          fontFamily: AppTypography.epunda,
-          package: AppTypography.packageName,
-          height: 1.38,
-          leadingDistribution: TextLeadingDistribution.even,
-        ),
-        t3:  TextStyle(
+        t1: TextStyle(
           fontSize: 24,
+          fontFamily: AppTypography.epunda,
+          package: AppTypography.packageName,
+          color: AppColorScheme.dark().textPrimary,
+          height: 1.38,
+          leadingDistribution: TextLeadingDistribution.even,
+        ),
+        t2: TextStyle(
+          fontSize: 22,
           color: AppColorScheme.dark().textPrimary,
           fontFamily: AppTypography.epunda,
           package: AppTypography.packageName,
           height: 1.38,
           leadingDistribution: TextLeadingDistribution.even,
         ),
-        t4:  TextStyle(
-          fontSize: 22,
+        t3: TextStyle(
+          fontSize: 20,
+          color: AppColorScheme.dark().textPrimary,
+          fontFamily: AppTypography.epunda,
+          package: AppTypography.packageName,
+          height: 1.38,
+          leadingDistribution: TextLeadingDistribution.even,
+        ),
+        t4: TextStyle(
+          fontSize: 18,
           color: AppColorScheme.dark().textPrimary,
           fontFamily: AppTypography.epunda,
           package: AppTypography.packageName,
