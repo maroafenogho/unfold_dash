@@ -25,8 +25,8 @@ jobs:
        run: flutter pub get
        
      - name: build web app
-     - run: flutter build web
-     - uses: FirebaseExtended/action-hosting-deploy@v0
+       run: flutter build web
+       uses: FirebaseExtended/action-hosting-deploy@v0
        with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOLEARN_241CA }}
