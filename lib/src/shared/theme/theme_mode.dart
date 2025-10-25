@@ -23,7 +23,7 @@ class CWMThemeMode extends ChangeNotifier {
         _themeMode = ThemeMode.light;
         break;
       default:
-        _themeMode = ThemeMode.system;
+        _themeMode = ThemeMode.dark;
         break;
     }
 
@@ -35,8 +35,16 @@ class CWMThemeMode extends ChangeNotifier {
     await pref.setString(_themeModeKey, mode.json);
   }
 
-  bool get isDark => (_themeMode == ThemeMode.dark) || _themeMode == ThemeMode.system &&  WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
-  bool get isLight => _themeMode == ThemeMode.light || _themeMode == ThemeMode.system &&  WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.light;
+  bool get isDark =>
+      (_themeMode == ThemeMode.dark) ||
+      _themeMode == ThemeMode.system &&
+          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+              Brightness.dark;
+  bool get isLight =>
+      _themeMode == ThemeMode.light ||
+      _themeMode == ThemeMode.system &&
+          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+              Brightness.light;
 }
 
 final appThemeModeNotifier = CWMThemeMode(PrefsService.instance);
