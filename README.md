@@ -113,11 +113,12 @@ This project uses **Flutterâ€™s native `ChangeNotifier`** for state management â
 For representing UI state, sealed classes were chosen over enums.
 
 ```dart
-sealed class DashboardUIState {}
+sealed class AppUIState {}
 
-class DashboardLoading extends DashboardUIState {}
-class DashboardLoaded extends DashboardUIState {}
-class DashboardError extends DashboardUIState {}
+class LoadingState extends AppUIState {}
+class SuccessState extends AppUIState {}
+class ErrorState extends AppUIState {}
+class IdleState extends AppUIState {}
 ```
 
 **Why?**

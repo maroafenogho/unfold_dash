@@ -17,6 +17,7 @@ jobs:
        uses: subosito/flutter-action@v2
        with:
          channel: stable
+         flutter-version: 3.35.1 
       
      - name: Run Flutter doctor
        run: flutter doctor -v
@@ -25,7 +26,7 @@ jobs:
        run: flutter pub get
        
      - name: build web app
-       run: flutter build web
+       run: flutter build web --release
 
      - name: deploy to Firebase
        uses: FirebaseExtended/action-hosting-deploy@v0
@@ -34,3 +35,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOLEARN_241CA }}
           channelId: live
           projectId: monolearn-241ca
+       env:
+         FIREBASE_CLI_EXPERIMENTS: webframeworks  
