@@ -2,7 +2,7 @@
 
 This Flutter project is structured around a **feature-first architecture** designed for clarity, scalability, and smooth performance.  
 It’s built to visualise biometrics data interactively while demonstrating thoughtful design, efficient state handling, and performance optimisation.
-
+ 
 ---
 
 ## 📂 Folder Structure
