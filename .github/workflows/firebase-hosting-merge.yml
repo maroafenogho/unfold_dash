@@ -10,10 +10,24 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: flutter build web
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
+     - name: Checkout code
+       uses: actions/checkout@v4
+
+     - name: Set up Flutter
+       uses: subosito/flutter-action@v2
+       with:
+          channel: stable
+      
+     - name: Run Flutter doctor
+       run: flutter doctor -v
+
+     - name: Install dependencies
+       run: flutter pub get
+       
+     - name: build web app
+     - run: flutter build web
+     - uses: FirebaseExtended/action-hosting-deploy@v0
+       with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MONOLEARN_241CA }}
           channelId: live
