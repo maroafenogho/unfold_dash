@@ -65,8 +65,8 @@ lib/
 ### Steps to Run
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/yourproject.git
-cd yourproject
+git clone https://github.com/maroafenogho/unfold_dash.git
+cd unfold_dash
 
 # 2. Get dependencies
 flutter pub get
@@ -147,7 +147,10 @@ Without compute(), a 5MB JSON parse might cause a noticeable UI lag; with it, th
 
 2. ⚡ Simple and Safe API
 
-It’s a single function call — await compute(fn, message).
+It’s a single function call —
+```dart
+ await compute(fn, message).
+ ```
 
 No need to manually manage SendPort/ReceivePort or isolate lifecycle.
 
@@ -155,8 +158,9 @@ Perfect for quick, one-off background tasks.
 
 Example:
 
+```dart
 final result = await compute(parseJson, jsonString);
-
+```
 
 This is far simpler than manually spawning and killing isolates.
 
@@ -170,13 +174,13 @@ Even though the Web doesn’t support full Dart isolates, Flutter maps compute()
 
 compute() automatically:
 
-Creates a new isolate.
+- Creates a new isolate.
 
-Runs the function in the background.
+- Runs the function in the background.
 
-Returns the result back to the main isolate.
+- Returns the result back to the main isolate.
 
-Shuts down the isolate when done.
+- Shuts down the isolate when done.
 
 You don’t have to worry about leaks or cleanup.
 
