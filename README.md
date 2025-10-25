@@ -127,6 +127,83 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
 
 ---
 
+## 🎨 Data parsing
+
+For a smooth and effective data parsing that is not UI blocing, I used compute to handle heavy data serialization and comutation in the background, allowing the UI run smoothly as data is fetched.
+
+For the json data processing, the app calls compute from a data transformer class which processes the data and sends it back to the calling method.
+
+
+**Benefits:**
+
+1. 🧘‍♂️ Prevents UI Freezes
+
+Heavy operations (like parsing large JSON or running data reduction algorithms) can block the main isolate.
+
+compute() offloads this work to a background isolate, keeping your UI smooth and responsive.
+
+Example:
+Without compute(), a 5MB JSON parse might cause a noticeable UI lag; with it, the main thread remains free to handle animations, gestures, and rendering.
+
+2. ⚡ Simple and Safe API
+
+It’s a single function call — await compute(fn, message).
+
+No need to manually manage SendPort/ReceivePort or isolate lifecycle.
+
+Perfect for quick, one-off background tasks.
+
+Example:
+
+final result = await compute(parseJson, jsonString);
+
+
+This is far simpler than manually spawning and killing isolates.
+
+3. 🌍 Cross-Platform Compatibility
+
+Works on Flutter Web, Android, iOS, macOS, Windows, and Linux.
+
+Even though the Web doesn’t support full Dart isolates, Flutter maps compute() to web workers internally — so you still get concurrency where possible.
+
+4. 🧩 Automatic Isolate Management
+
+compute() automatically:
+
+Creates a new isolate.
+
+Runs the function in the background.
+
+Returns the result back to the main isolate.
+
+Shuts down the isolate when done.
+
+You don’t have to worry about leaks or cleanup.
+
+5. 🧠 Reduces Boilerplate and Errors
+
+Manually handling isolates is error-prone (ports, serialization, message passing).
+
+compute() abstracts all that away — as long as you use top-level or static functions with serializable arguments/returns.
+
+6. 🔒 Thread-Safe for Pure Functions
+
+Since it enforces pure function usage (no captured variables or references to non-serializable objects), it naturally promotes functional, stateless design — safer and easier to test.
+
+7. 🧮 Improves Perceived Performance
+
+Even though total computation time might not change, users feel the app is faster because the UI remains interactive during background work.
+
+Especially useful in dashboards, charts, or animation-heavy UIs (like your biometrics dashboard).
+
+8. 🧰 Built-In to Flutter SDK
+
+No extra dependencies or third-party packages required.
+
+Well-maintained and optimised by the Flutter team.
+
+---
+
 ## 📈 Time-Series Visualisation
 
 The **dashboard’s highlight** is its **interactive time-series charts**, displaying metrics like HRV, RHR, and Steps.
@@ -150,6 +227,14 @@ Journal entries appear as **vertical annotations**. Tapping shows **mood and con
 The **Largest Triangle Three Buckets (LTTB)** algorithm is used to reduce large datasets efficiently, maintaining trend integrity and ensuring smooth rendering.
 
 > “It’s not just a chart — it’s your data’s story, simplified.”
+
+---
+
+---
+
+## Use of AI
+ 
+AI tools were strategically integrated throughout the development process to enhance productivity, design quality, and overall code performance. I leveraged AI for ideation, and code optimisation — particularly in designing efficient data handling strategies and implementing the LTTB (Largest-Triangle-Three-Buckets) decimation algorithm. AI also assisted in refining UI/UX patterns, handling performance trade-offs, and documenting best practices. Rather than replacing core engineering effort, AI served as a collaborative assistant — helping accelerate prototyping, improve clarity, and maintain high development standards.
 
 ---
 

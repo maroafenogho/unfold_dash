@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:unfold_dash/src/features/dashboard/application/dashboard_ui_state.dart';
 import 'package:unfold_dash/src/features/dashboard/data/dashboard_repo_impl.dart';
@@ -72,18 +72,18 @@ class DashboardNotifier extends ChangeNotifier {
     );
   }
 
-  void filterBioData(
+  Future<void> filterBioData(
     TimeRange range,
-    List<BiometricsPoint> data, {
-    int targetSize = 100,
-  }) {
+    List<BiometricsPoint> data,
+  ) async {
     if (data.isNotEmpty) {
       DateTime lastDate = data.last.date.getOrElse(DateTime.now());
       DateTime startDate = lastDate.subtract(Duration(days: range.days));
       if (data.length > 500 && range != TimeRange.d7) {
-        final decimatedValues = repo.decimateData(
-          data,
-          range == TimeRange.d30 ? 500 : 400,
+        final decimatedValues = await compute(
+          (message) =>
+              repo.decimateData(data, range == TimeRange.d30 ? 500 : 400),
+          range,
         );
 
         final datapoints = decimatedValues.fold(
@@ -127,20 +127,6 @@ class DashboardNotifier extends ChangeNotifier {
     _updateState(_state);
   }
 
-  void decimateData(List<BiometricsPoint> data, int targetSize) {
-    final dec = repo.decimateData(data, targetSize);
-
-    final deal = dec.fold(
-      (left) => const <BiometricsPoint>[],
-      (right) => right,
-    );
-    _updateState(
-      _state.copyWith(
-        biometricsUiState: _state.biometricsUiState.success(deal),
-      ),
-    );
-  }
-
   Future<void> getLargeData(int points) async {
     _updateState(
       _state.copyWith(
@@ -150,7 +136,10 @@ class DashboardNotifier extends ChangeNotifier {
       ),
     );
 
-    final result = await repo.generateLargeBioData(points);
+    final result = await compute(
+      (message) async => await repo.generateLargeBioData(points),
+      points,
+    );
     _state = _state.copyWith(
       biometricsUiState: result.fold(_state.biometricsUiState.exception, (r) {
         return _state.biometricsUiState.success(r);

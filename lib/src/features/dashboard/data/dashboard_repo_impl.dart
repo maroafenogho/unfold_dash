@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:flutter/services.dart';
 import 'package:unfold_dash/src/features/dashboard/data/dashboard_repository.dart';
 import 'package:unfold_dash/src/features/dashboard/domain/dtos/response/biometrics_point.dart';
