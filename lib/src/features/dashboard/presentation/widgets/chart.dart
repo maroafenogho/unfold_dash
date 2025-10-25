@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:unfold_dash/src/features/dashboard/application/dashboard_notifier.dart';
 import 'package:unfold_dash/src/features/dashboard/domain/dtos/response/biometrics_point.dart';
+import 'package:unfold_dash/src/shared/services/mean_service.dart';
 import 'package:unfold_dash/src/shared/shared.dart';
 
 class UnfoldChart extends StatelessWidget {
@@ -12,6 +14,7 @@ class UnfoldChart extends StatelessWidget {
     required this.unit,
     required this.returnTouchedPoint,
     required this.color,
+    this.showBand = false,
   });
 
   final List<BiometricsPoint> data;
@@ -20,6 +23,7 @@ class UnfoldChart extends StatelessWidget {
   final Function(int) returnTouchedPoint;
   final String unit;
   final Color color;
+  final bool showBand;
   @override
   Widget build(BuildContext context) {
     final spots = data
@@ -28,8 +32,69 @@ class UnfoldChart extends StatelessWidget {
         .map((e) => FlSpot(e.key.toDouble(), getData(e.value)))
         .toSet()
         .toList();
+
+    final line = [
+      LineChartBarData(
+        barWidth: 1.5,
+        dotData: FlDotData(show: false),
+        preventCurveOverShooting: true,
+        color: color,
+        isCurved: true,
+        spots: spots.isNotEmpty ? spots : [FlSpot(0, 0)],
+        belowBarData: BarAreaData(
+          show: true,
+          gradient: LinearGradient(
+            begin: AlignmentGeometry.topCenter,
+            end: AlignmentGeometry.bottomCenter,
+            colors: [color.withValues(alpha: 0.35), Colors.transparent],
+          ),
+        ),
+      ),
+    ];
+
     final minAndMaxValues = spots.minimumAndMaximum;
     final padding = (minAndMaxValues.max - minAndMaxValues.min) * 0.1;
+    if (showBand && data.length >= 10) {
+      final bands = MeanService.generateHrvBands(
+        spots.map((e) => e.y).toList(),
+      );
+
+      line.add(
+        LineChartBarData(
+          barWidth: 1.5,
+          dotData: FlDotData(show: false),
+          preventCurveOverShooting: true,
+          color: context.colorScheme.primary,
+          isCurved: true,
+          spots: bands.mean.isNotEmpty ? bands.mean : [FlSpot(0, 0)],
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              begin: AlignmentGeometry.topCenter,
+              end: AlignmentGeometry.bottomCenter,
+              colors: [color.withValues(alpha: 0.35), Colors.transparent],
+            ),
+          ),
+        ),
+      );
+
+      line.add(
+        LineChartBarData(
+          barWidth: 1.5,
+          dotData: FlDotData(show: false),
+          preventCurveOverShooting: true,
+          color: Colors.transparent,
+          isCurved: true,
+          spots: bands.upper.isNotEmpty ? bands.upper : [FlSpot(0, 0)],
+          belowBarData: BarAreaData(
+            show: true,
+            color: context.colorScheme.tetiary.withValues(alpha: 0.2),
+            cutOffY: bands.lower.last.y,
+            applyCutOffY: true,
+          ),
+        ),
+      );
+    }
     return AppContainerWrapper(
       child: Column(
         children: [
@@ -54,7 +119,16 @@ class UnfoldChart extends StatelessWidget {
               LineChartData(
                 borderData: FlBorderData(show: false),
                 gridData: FlGridData(show: true),
-
+                extraLinesData: ExtraLinesData(
+                  verticalLines: [
+                    VerticalLine(
+                      x: data.indexOf(dashNotifier.state.point).toDouble(),
+                      color: context.colorScheme.primary,
+                      strokeWidth: 1,
+                      dashArray: [4, 4],
+                    ),
+                  ],
+                ),
                 titlesData: FlTitlesData(
                   show: true,
                   rightTitles: AxisTitles(
@@ -93,6 +167,18 @@ class UnfoldChart extends StatelessWidget {
                 minY: minAndMaxValues.min - padding,
                 maxY: minAndMaxValues.max + padding,
                 lineTouchData: LineTouchData(
+                  touchCallback: (event, response) {
+                    if (event.isInterestedForInteractions &&
+                        response != null &&
+                        response.lineBarSpots != null &&
+                        response.lineBarSpots!.isNotEmpty) {
+                      final touchedX = response.lineBarSpots!.first.x;
+                      returnTouchedPoint(touchedX.toInt());
+                    } else if (event is FlLongPressEnd ||
+                        event is FlPanEndEvent ||
+                        event is FlTapUpEvent) {}
+                  },
+
                   touchTooltipData: LineTouchTooltipData(
                     maxContentWidth: 200,
                     tooltipBorder: BorderSide(
@@ -105,7 +191,7 @@ class UnfoldChart extends StatelessWidget {
                     showOnTopOfTheChartBoxArea: true,
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((e) {
-                        returnTouchedPoint(e.spotIndex);
+                        // returnTouchedPoint(e.spotIndex);
                         return LineTooltipItem(
                           textAlign: TextAlign.left,
                           data[e.spotIndex].date
@@ -120,27 +206,7 @@ class UnfoldChart extends StatelessWidget {
                     },
                   ),
                 ),
-                lineBarsData: [
-                  LineChartBarData(
-                    barWidth: 1.5,
-                    dotData: FlDotData(show: false),
-                    preventCurveOverShooting: true,
-                    color: color,
-                    isCurved: true,
-                    spots: spots.isNotEmpty ? spots : [FlSpot(0, 0)],
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        begin: AlignmentGeometry.topCenter,
-                        end: AlignmentGeometry.bottomCenter,
-                        colors: [
-                          color.withValues(alpha: 0.35),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                lineBarsData: [...line],
               ),
             ),
           ),

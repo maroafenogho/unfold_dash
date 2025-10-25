@@ -8,6 +8,7 @@ class DashboardUiState {
   final TimeRange selectedTimeRange;
   final List<BiometricsPoint> filteredDataPoints;
   final bool getLargeDataSet;
+  final BiometricsPoint point;
 
   DashboardUiState({
     required this.journalUiState,
@@ -15,6 +16,7 @@ class DashboardUiState {
     required this.selectedTimeRange,
     required this.filteredDataPoints,
     required this.getLargeDataSet,
+    required this.point,
   });
 
   DashboardUiState copyWith({
@@ -23,12 +25,14 @@ class DashboardUiState {
     TimeRange? selectedTimeRange,
     List<BiometricsPoint>? filteredDataPoints,
     bool? getLargeDataSet,
+    BiometricsPoint? point,
   }) => DashboardUiState(
     journalUiState: journalUiState ?? this.journalUiState,
     biometricsUiState: biometricsUiState ?? this.biometricsUiState,
     getLargeDataSet: getLargeDataSet ?? this.getLargeDataSet,
     filteredDataPoints: filteredDataPoints ?? this.filteredDataPoints,
     selectedTimeRange: selectedTimeRange ?? this.selectedTimeRange,
+    point: point ?? this.point,
   );
 
   DashboardUiState.initial()
@@ -36,5 +40,6 @@ class DashboardUiState {
       biometricsUiState = const IdleState(),
       filteredDataPoints = const [],
       getLargeDataSet = false,
+      point = BiometricsPoint.empty(),
       selectedTimeRange = TimeRange.d7;
 }

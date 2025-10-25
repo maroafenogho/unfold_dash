@@ -15,19 +15,19 @@ class ChartLoader extends StatelessWidget {
       children: [
         AppShimmer(
           width: MediaQuery.sizeOf(context).width * 0.85,
-          height: 200,
+          height: 150,
           baseColor: baseColor,
           colors: colors,
         ),
         AppShimmer(
           width: MediaQuery.sizeOf(context).width * 0.85,
-          height: 200,
+          height: 150,
           baseColor: baseColor,
           colors: colors,
         ),
         AppShimmer(
           width: MediaQuery.sizeOf(context).width * 0.85,
-          height: 200,
+          height: 150,
           baseColor: baseColor,
           colors: colors,
         ),

@@ -24,6 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Key('dashboard'),
       backgroundColor: context.colorScheme.background,
       appBar: AppBar(
         backgroundColor: context.colorScheme.surface,
@@ -52,12 +53,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 child: Column(
                   children: [
-                    Wrap(
-                      alignment: WrapAlignment.end,
-                      spacing: AppConstants.mediumSpaceX,
-                      runSpacing: AppConstants.smallSpace,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      spacing: AppConstants.smallSpace,
+
                       children: [
                         SegmentedButton<TimeRange>(
+                          key: const Key('interval_segmented_button'),
                           showSelectedIcon: true,
                           selectedIcon: Icon(
                             Icons.check,
@@ -133,13 +135,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     AppConstants.mediumSpaceM.vSpace,
                     UnfoldChart(
                       data: dashNotifier.state.filteredDataPoints,
+
                       returnTouchedPoint: (index) {
-                        // dashNotifier.setTouchedPoint(
-                        //   dashNotifier.state.filteredDataPoints[index],
-                        // );
-                        // print(dashNotifier.state.filteredDataPoints[index].hrv);
+                        dashNotifier.setTouchedPoint(
+                          dashNotifier.state.filteredDataPoints[index],
+                        );
                       },
                       title: 'HRV (Heart Rate Variability)',
+                      showBand: true,
                       color: context.colorScheme.textSecondary,
                       getData: (dataPoint) => dataPoint.hrv.toDouble(),
                       unit: 'ms',
@@ -148,7 +151,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     UnfoldChart(
                       data: dashNotifier.state.filteredDataPoints,
                       title: 'RHR (Resting Heart Rate)',
-                      returnTouchedPoint: (index) {},
+                      returnTouchedPoint: (index) {
+                        dashNotifier.setTouchedPoint(
+                          dashNotifier.state.filteredDataPoints[index],
+                        );
+                      },
                       color: context.colorScheme.tetiary,
                       getData: (dataPoint) => dataPoint.rhr.toDouble(),
                       unit: 'bpm',
@@ -157,7 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     UnfoldChart(
                       data: dashNotifier.state.filteredDataPoints,
                       title: 'Steps',
-                      returnTouchedPoint: (index) {},
+                      returnTouchedPoint: (index) {
+                        dashNotifier.setTouchedPoint(
+                          dashNotifier.state.filteredDataPoints[index],
+                        );
+                      },
                       color: context.colorScheme.success,
                       getData: (dataPoint) => dataPoint.steps.toDouble(),
                       unit: 'steps',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:unfold_dash/src/features/dashboard/application/dashboard_ui_state.dart';
 import 'package:unfold_dash/src/features/dashboard/data/dashboard_repo_impl.dart';
 import 'package:unfold_dash/src/features/dashboard/data/dashboard_repository.dart';
@@ -6,10 +7,13 @@ import 'package:unfold_dash/src/features/dashboard/domain/dtos/response/biometri
 import 'package:unfold_dash/src/shared/shared.dart';
 
 class DashboardNotifier extends ChangeNotifier {
-  DashboardNotifier() {
-    repo = DashboardRepoImpl();
+  DashboardNotifier(this.repo) {
+    Future.microtask(() {
+      getBioData();
+      // getJournals();
+    });
   }
-  late final DashboardRepository repo;
+  DashboardRepository repo;
   DashboardUiState _state = DashboardUiState.initial();
 
   DashboardUiState get state => _state;
@@ -29,6 +33,13 @@ class DashboardNotifier extends ChangeNotifier {
         ),
       ),
     );
+  }
+
+  void setTouchedPoint(BiometricsPoint point) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _state = _state.copyWith(point: point);
+      _updateState(_state);
+    });
   }
 
   void updateGetLargeData(bool getLargeDataSet) {
@@ -72,7 +83,7 @@ class DashboardNotifier extends ChangeNotifier {
       if (data.length > 500 && range != TimeRange.d7) {
         final decimatedValues = repo.decimateData(
           data,
-          range == TimeRange.d30 ? 500 : 300,
+          range == TimeRange.d30 ? 500 : 400,
         );
 
         final datapoints = decimatedValues.fold(
@@ -157,4 +168,4 @@ class DashboardNotifier extends ChangeNotifier {
   }
 }
 
-final dashNotifier = DashboardNotifier();
+final dashNotifier = DashboardNotifier(DashboardRepoImpl());
