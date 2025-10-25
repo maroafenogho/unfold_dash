@@ -1,6 +1,6 @@
 # ⚖️ Trade-offs & Design Decisions
 
-This document outlines the key trade-offs made during the development of the **Biometrics Dashboard**, explaining the reasoning behind each major technical and design choice. The goal was to maintain a clean architecture, responsive performance, and developer-friendly maintainability — while staying lightweight and scalable.
+This document outlines the key trade-offs made during the development of the **Unfold Dashboard**, explaining the reasoning behind each major technical and design choice. The goal was to maintain a clean architecture, responsive performance, and developer-friendly maintainability — while staying lightweight and scalable.
 
 ---
 
