@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "monolearn-241ca"
+  },
+  "targets": {
+    "monolearn-241ca": {
+      "hosting": {
+        "unfold": [
+          "unfold-admin"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
