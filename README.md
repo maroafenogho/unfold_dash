@@ -1,8 +1,7 @@
 # 🧭 Project Overview
 
-This Flutter project is structured around a **feature-first architecture** designed for clarity, scalability, and smooth performance.  
-It’s built to visualise biometrics data interactively while demonstrating thoughtful design, efficient state handling, and performance optimisation.
- 
+This Flutter project is structured for **clarity, scalability, and strong separation of concerns**. It leverages a **feature-first architecture** with clean layers, ensuring maintainability and clear data flow between presentation, application, domain, and data layers.
+
 ---
 
 ## 📂 Folder Structure
@@ -78,161 +77,88 @@ flutter run
 
 ---
 
-## 🧩 Architecture Summary
+## 🧠 State Management
 
-The project follows a **Clean Feature-Based Architecture**, with clear separation of concerns across four main layers:
+This project uses Flutter’s **native ChangeNotifier** for state management.
 
-| Layer | Responsibility |
-|-------|----------------|
-| **Domain** | Pure data models and DTOs — framework-independent. |
-| **Data** | Repository and data retrieval (mock or live). |
-| **Application** | State management and UI coordination. |
-| **Presentation** | UI widgets, screens, and theming. |
-| **Shared** | Common utilities, theme, and extensions used across features. |
+> “Small enough to be simple, yet capable enough to scale.”
 
-This architecture enables **clear ownership**, easy testing, and smooth scalability.
+The `ChangeNotifier` pattern was chosen because:
+- It avoids external dependencies.
+- It offers **clean reactive patterns** with minimal boilerplate.
+- It’s **easy to extend** for larger projects later on.
 
 ---
 
-## 🧠 State Management – Native `ChangeNotifier`
+## 🧾 UI State – Sealed Classes
 
-This project uses **Flutter’s native `ChangeNotifier`** for state management — a choice driven by simplicity and sufficiency.
-
-**Why `ChangeNotifier`?**
-- **Lightweight and built-in** — no external dependencies.
-- **Reactive and efficient** — `notifyListeners()` propagates UI updates instantly.
-- **Easy to reason about** — state transitions are explicit and predictable.
-- **Scales reasonably** for projects of this scope, and can later evolve into something more sophisticated (like `Notifier` or `Riverpod`) without major refactors.
-
-> “ChangeNotifier is small, fast, and perfectly suited for apps that value simplicity over ceremony.”
-
----
-
-## 🧾 UI State – Sealed Classes, Not Enums
-
-For representing UI state, sealed classes were chosen over enums.
+Rather than using enums, **sealed classes** define UI states in `dashboard_ui_state.dart`:
 
 ```dart
-sealed class AppUIState {}
+sealed class DashboardUIState {}
 
-class LoadingState extends AppUIState {}
-class SuccessState extends AppUIState {}
-class ErrorState extends AppUIState {}
-class IdleState extends AppUIState {}
+class DashboardLoading extends DashboardUIState {}
+class DashboardLoaded extends DashboardUIState {}
+class DashboardError extends DashboardUIState {}
 ```
 
-**Why?**
-- Each state can **hold its own data**.
-- **Type-safe pattern matching** with less boilerplate.
-- Easier to **extend or modify** as the app grows.
-
-> “Enums describe — sealed classes *express*.”
+**Why this approach?**
+- **Type-safe** and **expressive**.
+- Each state can hold specific data.
+- Eliminates cumbersome switch statements.
 
 ---
 
-## 🎨 Theming with Theme Extensions
+## 🎨 Theming
 
-This project implements a **custom `AppThemeData`** class built on top of Flutter’s `ThemeExtension` system, combining a **colour scheme** and **typography system** for a complete, composable theme layer.
+The app uses a **custom ThemeExtension** pattern via the `AppThemeData` class:
 
 ```dart
 class AppThemeData extends ThemeExtension<AppThemeData> {
   final AppColorScheme colorScheme;
   final AppTypography typography;
-
-  AppThemeData({
-    required this.colorScheme,
-    required this.typography,
-  });
-
-  @override
-  AppThemeData copyWith({
-    AppColorScheme? colorScheme,
-    AppTypography? typography,
-  }) => AppThemeData(
-        colorScheme: colorScheme ?? this.colorScheme,
-        typography: typography ?? this.typography,
-      );
-
-  @override
-  AppThemeData lerp(ThemeExtension<AppThemeData>? other, double t) {
-    if (other is! AppThemeData) return this;
-    return AppThemeData(
-      colorScheme: AppColorScheme.lerp(colorScheme, other.colorScheme, t),
-      typography: AppTypography.lerp(typography, other.typography, t),
-    );
-  }
 }
 ```
 
-**Advantages**
-- Gives **complete control** over colour, typography, and spacing.
-- Makes it easy to switch or adjust themes (e.g. light/dark or brand-specific).
-- Keeps UI code **semantic and readable** — e.g. `theme.colorScheme.success`.
-- Scales naturally with new properties (shadows, animations, etc.).
-
-> “Theme extensions turn design tokens into living code.”
+**Benefits:**
+- Fine-grained colour and typography control.
+- Smooth light/dark mode transitions.
+- Easily extensible for brand evolution.
 
 ---
 
-## 📉 Data Decimation – LTTB (Largest Triangle Three Buckets)
+## 📈 Time-Series Visualisation
 
-To maintain smooth chart performance across large datasets, this project implements the **LTTB** algorithm for data decimation.
+The **dashboard’s highlight** is its **interactive time-series charts**, displaying metrics like HRV, RHR, and Steps.
 
-**Why LTTB?**
-- Retains key visual patterns while dropping redundant points.
-- Keeps frame times consistently below 16ms per frame.
-- Provides a **natural visual downsampling** without distorting trends.
-- Perfect for biometrics or time-series visualisations.
+### 🔹 Chart Synchronisation
+All three charts are **time-synced**, meaning hover or tap interactions reflect on all simultaneously — ensuring coherent visual storytelling.
 
-> “LTTB doesn’t throw data away — it curates it.”
+### 🔹 Range Controls
+Dynamic range toggling between **7, 30, and 90 days**, updating:
+- Visible domain (X-axis)
+- Data resolution (via decimation)
+- Tooltip visibility and markers
 
----
+### 🔹 Rolling Mean Bands (HRV)
+The HRV chart includes **7-day rolling mean ± 1σ bands** to visualise variability and recovery trends.
 
-## 📊 Data Visualisation & Features
+### 🔹 Journal Markers
+Journal entries appear as **vertical annotations**. Tapping shows **mood and context**, blending subjective and biometric data.
 
-The dashboard visualises **three biometric metrics** over time:
+### 🔹 LTTB Decimation
+The **Largest Triangle Three Buckets (LTTB)** algorithm is used to reduce large datasets efficiently, maintaining trend integrity and ensuring smooth rendering.
 
-- **HRV (Heart Rate Variability)**
-- **RHR (Resting Heart Rate)**
-- **Steps**
-
-**Core Interactions:**
-- Shared tooltip and crosshair across all charts.
-- Range controls (7d / 30d / 90d).
-- Smooth pan and zoom.
-- Vertical annotations for journal entries (tap to view mood/note).
-- HRV band with 7-day rolling mean ±1σ (standard deviation).
+> “It’s not just a chart — it’s your data’s story, simplified.”
 
 ---
 
-## 🧰 Tech Stack
+## 💡 Summary
 
-| Category | Libraries |
-|-----------|------------|
-| **Framework** | Flutter 3.35.1 |
-| **State Management** | Native `ChangeNotifier` |
-| **Charting** | `fl_chart` |
-| **Data Decimation** | Custom LTTB implementation |
-| **Testing** | `flutter_test`, `mocktail` |
-| **Theming** | `ThemeExtension` with `AppThemeData`, `AppColorScheme`, `AppTypography` |
-| **Utilities** | `intl`, `collection` |
+This architecture is designed to be:
+- **Clean** — with modular separation by feature.  
+- **Efficient** — native ChangeNotifier and sealed classes keep it lightweight.  
+- **Elegant** — theming and chart sync offer a polished UX.  
+- **Scalable** — ready for future growth in data and complexity.
 
----
-
-## ⚡ Performance Notes
-
-- LTTB reduces 10K+ points to <500 key points with no visible trend loss.
-- Maintains <16ms frame time for 90-day datasets.
-- Mock latency (700–1200ms) and ~10% simulated failures ensure realistic behaviour.
-- Handles **loading**, **error**, and **empty** states gracefully.
-- Fully responsive layout with dark mode support.
-
----
-
-## ✨ Summary
-
-This biometrics dashboard demonstrates how **clean architecture, minimal dependencies, and Flutter’s built-in tools** can deliver an elegant and high-performance data experience.  
-
-From **sealed states** to **LTTB decimation** and **custom theming**, every design decision was made to keep the app lightweight, expressive, and scalable.
-
-> 🧩 “Simple. Elegant. Intentional. Built to perform — and to last.”
+> ⚡ “Built small, designed smart, ready to scale.”
