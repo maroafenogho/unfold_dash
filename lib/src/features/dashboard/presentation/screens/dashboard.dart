@@ -35,8 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListenableBuilder(
         listenable: dashNotifier,
         builder: (context, child) {
-          return switch (dashNotifier.state.biometricsUiState) {
-            LoadingState() => Center(
+          return dashNotifier.state.biometricsUiState.when(
+            onLoading: () => Center(
               child: ChartLoader(
                 colors: [
                   context.colorScheme.textSecondary,
@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 baseColor: context.colorScheme.surface,
               ),
             ),
-            SuccessState(result: final data) => SingleChildScrollView(
+            onSuccess: (data) => SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               child: Padding(
                 padding: AppConstants.mediumSpaceM.allEdgeInsets,
@@ -177,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            ErrorState(exception: final error) => Center(
+            onError: (error) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -211,8 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            IdleState() => const SizedBox.shrink(),
-          };
+          );
         },
       ),
     );

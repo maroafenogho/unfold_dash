@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:unfold_dash/src/shared/shared.dart';
+
+typedef VoidWidgetCallback = Widget Function();
+Widget _kIdleClosure() => const SizedBox.shrink();
 
 sealed class BaseUiState<T> {
   const BaseUiState();
@@ -9,6 +13,18 @@ sealed class BaseUiState<T> {
   bool get isError => false;
   bool get isSuccess => false;
   bool get isLoading => false;
+
+  Widget when({
+    required VoidWidgetCallback onLoading,
+    required Widget Function(T state) onSuccess,
+    required Widget Function(AppException error) onError,
+    VoidWidgetCallback onIdle = _kIdleClosure,
+  }) => switch (this) {
+    IdleState() => onIdle(),
+    SuccessState<T>(result: final data) => onSuccess(data),
+    LoadingState<T>() => onLoading(),
+    ErrorState<T>(:final exception) => onError(exception),
+  };
 }
 
 class IdleState<T> extends BaseUiState<T> {
