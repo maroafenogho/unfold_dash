@@ -5,6 +5,10 @@ sealed class BaseUiState<T> {
   T? get data => null;
   AppException? get error => null;
   bool get hasData => data != null;
+
+  bool get isError => false;
+  bool get isSuccess => false;
+  bool get isLoading => false;
 }
 
 class IdleState<T> extends BaseUiState<T> {
@@ -16,6 +20,9 @@ class LoadingState<T> extends BaseUiState<T> {
 
   @override
   final T? data;
+
+  @override
+  bool get isLoading => true;
 }
 
 class ErrorState<T> extends BaseUiState<T> {
@@ -28,6 +35,9 @@ class ErrorState<T> extends BaseUiState<T> {
 
   @override
   AppException? get error => exception;
+
+  @override
+  bool get isError => true;
 }
 
 class SuccessState<T> extends BaseUiState<T> {
@@ -37,6 +47,9 @@ class SuccessState<T> extends BaseUiState<T> {
 
   @override
   T? get data => result;
+
+  @override
+  bool get isSuccess => true;
 }
 
 extension BaseUiStateX<T> on BaseUiState<T> {
